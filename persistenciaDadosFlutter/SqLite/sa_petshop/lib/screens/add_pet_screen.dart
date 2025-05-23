@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:sa_petshop/controllers/pets_controller.dart';
 import 'package:sa_petshop/models/pet_model.dart';
+import 'package:sa_petshop/screens/home_screen.dart';
 
 class AddPetScreen extends StatefulWidget {
   @override
@@ -11,7 +13,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
   final _formKey = GlobalKey<FormState>(); //chave para o Formulário
   final _petsController = PetsController();
 
-  static String _nome = "";
+  String _nome = "";
   String _raca = "";
   String _nomeDono = "";
   String _telefoneDono = "";
@@ -27,7 +29,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
       );
 
       await _petsController.addPet(newPet);
-      Navigator.pop(context); //Retorna para a tela anterior
+      Navigator.push(context as BuildContext, MaterialPageRoute(builder: (context)=>HomeScreen())); //Retorna para a tela anterior
     }
   }
 

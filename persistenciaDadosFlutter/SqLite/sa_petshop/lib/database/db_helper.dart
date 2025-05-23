@@ -8,6 +8,14 @@ import 'package:sqflite/sqflite.dart';
 
 class PetShopDBHelper {
   static Database? _database; //obj para criar conexões
+  //transformando a classe em singleton -> não permite instanciar outro objeto enquanto um objeto estiver ativo
+  static final PetShopDBHelper _instance = PetShopDBHelper._internal();
+
+  //construtor singleton
+  PetShopDBHelper._internal();
+  factory PetShopDBHelper() {
+    return _instance;
+  }
 
   Future<Database> get database async {
     if (_database != null) {
@@ -22,25 +30,27 @@ class PetShopDBHelper {
     final _dbPath = await getDatabasesPath();
     final path = join(_dbPath, "petshop.db");
 
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
-  }
-
-  Future<void> _onCreate(Database db, int version) async {
-    //criar table pets
-    await db.execute("""CREATE TABLE pets(id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT NOT NULL,
-      raca TEXT NOT NULL,
-      nome_dono TEXT NOT NULL,
-      telefone_dono TEXT NOT NULL)""");
-
-    //criar table consultas
-    await db.execute("""CREATE TABLE consultas(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      pet_id INTEGER NOT NULL,
-      data_hora TEXT NOT NULL,
-      tipo_servico TEXT NOT NULL,
-      observacao TEXT, 
-      FOREIGN KEY (pet_id) REFERENCES pets(id) ON DELETE CASCADE)""");
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute(
+          """CREATE TABLE IF NOT EXISTS pets(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          nome TEXT NOT NULL,
+          raca TEXT NOT NULL,
+          nome_dono TEXT NOT NULL,
+          telefone_dono TEXT NOT NULL);,
+          CREATE TABLE IF NOT EXISTS consultas(
+            id INTERGER PRIMARY KEY AUTOINCREMENT,
+           pet_id INTEGER NOT NULL,
+           data_hora TEXT NOT NULL,
+           tipo_serviço TEXT NOT NULL,
+           observacao TECTP TEXTE NULL
+           FOREIGN KEY (pet_id) REFERENCES(id) ON DELETE CASCADE);
+        """);
+      },
+    );
   }
 
   //métodos crud para pets
@@ -49,59 +59,62 @@ class PetShopDBHelper {
     return await db.insert("pets", pet.toMap()); //retorna oID
   }
 
-  
-  Future<List<Pet>> getPets() async{
+  Future<List<Pet>> getPets() async {
     final db = await database;
-    final List<Map<String,dynamic>> maps = await db.query("pets"); // recebe todos os pets cadastros
+    final List<Map<String, dynamic>> maps = await db.query(
+      "pets",
+    ); // recebe todos os pets cadastros
     //converter em objetos
-    return maps.map((e)=>Pet.fromMap(e)).toList();
+    return maps.map((e) => Pet.fromMap(e)).toList();
     // adiciona elem por elem na lista já convertido em obj
   }
 
-  Future<Pet?> getPetById(int id) async{
+  Future<Pet?> getPetById(int id) async {
     final db = await database;
-    final List<Map<String,dynamic>> maps = await db.query( //faz a busca no BD
-      "pets",where: "id=?",whereArgs: [id]); // A partir do ID solicitado
+    final List<Map<String, dynamic>> maps = await db.query(
+      //faz a busca no BD
+      "pets",
+      where: "id=?",
+      whereArgs: [id],
+    ); // A partir do ID solicitado
     // Se Encontrado
-    if(maps.isNotEmpty){
+    if (maps.isNotEmpty) {
       return Pet.fromMap(maps.first); //cria o obj com 1º elementos da list
-    }else{
+    } else {
       null;
     }
   }
 
-
-  Future<int> deletePet(int id) async{
+  Future<int> deletePet(int id) async {
     final db = await database;
-    return await db.delete("pets",where: "id=?",whereArgs:[id]); 
+    return await db.delete("pets", where: "id=?", whereArgs: [id]);
     // deleta o pet da tabela que tenha o id igual ao passado pelo parametro
   }
 
   //métodos CRUDs para Consultas
 
-  Future<int> insertConsulta (Consulta consulta) async{
+  Future<int> insertConsulta(Consulta consulta) async {
     final db = await database;
     //insere a consulta no BD
     return await db.insert("consultas", consulta.toMap());
   }
 
-  Future<List<Consulta>> getConsultaForPet(int petId) async{
+  Future<List<Consulta>> getConsultaForPet(int petId) async {
     final db = await database;
     //Consulta  por pet especifico
-    final List<Map<String,dynamic>> maps = await db.query(
+    final List<Map<String, dynamic>> maps = await db.query(
       "consulta",
       where: "pet_id = ?",
       whereArgs: [petId],
-      orderBy: "data_hora ASC" //ordena pela DAta/Hora
+      orderBy: "data_hora ASC", //ordena pela DAta/Hora
     );
     //converter a map para obj
-    return maps.map((e)=>Consulta.fromMap(e)).toList();
+    return maps.map((e) => Consulta.fromMap(e)).toList();
   }
 
-  Future<int> deleteConsulta(int id) async{
+  Future<int> deleteConsulta(int id) async {
     final db = await database;
     //delete pelo ID
     return await db.delete("consulta", where: "id = ?", whereArgs: [id]);
   }
-
 }

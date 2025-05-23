@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sa_petshop/controllers/pets_controller.dart';
 import 'package:sa_petshop/models/pet_model.dart';
 import 'package:sa_petshop/screens/add_pet_screen.dart';
+import 'package:sa_petshop/screens/pet_detalhe_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -55,7 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   return ListTile(
                     title: Text(pet.nome),
                     subtitle: Text(pet.raca),
-                    onTap: () async {},
+                    onTap: () => Navigator.push(context,
+             MaterialPageRoute(builder: (context)=>PetDetalheScreen(petId: pet.id!)))
                   );
                 },
               ),
