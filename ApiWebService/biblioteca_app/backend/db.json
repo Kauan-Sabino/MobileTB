@@ -1,0 +1,37 @@
+{
+    "usuarios":[
+        {
+            "id":1,
+            "nome":"ugarando",
+            "email":"ugarando@email.com"
+        },
+        {
+            "id":2,
+            "nome": "ugassius",
+            "email":"uga@email.com"
+        }
+    ],
+    "livros":[
+        {
+            "id":1,
+            "titulo":"Guia dos mochileiros da Galáxia",
+            "autor":"Douglas Noel Adans",
+            "disponivel":false
+        },
+        {
+            "id":"2",
+            "titulo":"Memórias póstumas de Brás Cubas",
+            "autor":"Machado de Assis",
+            "disponivel":true
+        }
+    ],
+    "emprestimos":[
+        {
+            "id":1,
+            "usuario_id":1,
+            "data_emprestimo":"2025-08-22",
+            "data_devolução":"2025-09-01",
+            "devolvido":false
+        }
+    ]
+}
