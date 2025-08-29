@@ -8,14 +8,14 @@ class Usuario {
   Usuario({this.id, required this.nome,required this.email});
 
   //métodos 
-  //toJson 
+  //toJson obj => Map(Json)
   Map<String,dynamic> toJson() =>{
     "id": id,
     "nome": nome,
     "email": email
   };
 
-  //fromJson
+  //fromJson json(Map) => obj
   factory Usuario.fromJson(Map<String,dynamic> json) =>
   Usuario(
     id:json["id"].toString(),
