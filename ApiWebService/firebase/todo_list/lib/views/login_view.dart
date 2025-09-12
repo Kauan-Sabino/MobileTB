@@ -12,15 +12,19 @@ class LoginView extends StatefulWidget{
 
 class _LoginViewState extends State<LoginView> {
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;//controlador das ações de autenticação do usuario
   final _emailField = TextEditingController();
   final _senhaField = TextEditingController();
+  bool _ocultarSenha = true;
 
+  //método pra fazer login
   void _signIn()async{
     try{
-      await _auth.signInWithEmailAndPassword(
+      await _auth.signInWithEmailAndPassword(//chama o método de autenticação do controller por email e senha
         email: _emailField.text.trim(),
         password: _senhaField.text);
+      //verifica se conseguiu autenticação no firebase(muda status do ususario)
+      //direciona automaticamente para tela de login
     } catch (e ){
       ScaffoldMessenger.of(context). showSnackBar(SnackBar(content: Text("Falha oa fazer login: $e"),));
     }
@@ -39,10 +43,15 @@ class _LoginViewState extends State<LoginView> {
               decoration: InputDecoration(labelText: "email"),
               keyboardType: TextInputType.emailAddress,
             ),
-            TextField(
+            TextField( //criar olho pra ver a senha
               controller:_senhaField,
-              decoration: InputDecoration(labelText: "senha"),
-              obscureText: true,
+              decoration: InputDecoration(labelText: "senha",
+              suffix: IconButton(
+                onPressed: ()=>setState(() {
+                  _ocultarSenha = !_ocultarSenha;
+                }),
+                icon: Icon(_ocultarSenha ? Icons.visibility : Icons.visibility_off))),
+              obscureText: _ocultarSenha, //oculta a senha quando digitada
             ),
             SizedBox(height: 20,),
             ElevatedButton(
